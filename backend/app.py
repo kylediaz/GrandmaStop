@@ -12,27 +12,29 @@ aai.settings.api_key = "a8414083bc4b4e298baf9d23e128da59"
 
 @app.route('/upload', methods=['POST'])
 def upload_audio():
-    print(request.values)
-    if 'file' not in request.values:
+    if 'file' not in request.files:
         return 'No file part', 400
-    audio_blob = request.values['file']
+    audio_file = request.files['file']
 
     # Save the uploaded file temporarily
     temp_dir = "temp"
     os.makedirs(temp_dir, exist_ok=True)
-    file_path = os.path.join(temp_dir, "temp.mp3")
+    file_path = os.path.join(temp_dir, audio_file.filename)
 
-    with open(file_path, 'w') as file:
-        file.write(audio_blob)
+    blob = audio_file.read()
+    with open(file_path, 'wb') as f:
+        f.write(blob)   
 
-    # Set the content safety and entity detection config
-    config = aai.TranscriptionConfig(
-        entity_detection=True,  # Enable entity detection
-        content_safety=True,
-        content_safety_confidence=60  # 60% confidence threshold
-    )
-
+    
+    # Now use the saved file path for transcription
     try:
+        # Set the content safety and entity detection config
+        config = aai.TranscriptionConfig(
+            entity_detection=True,  # Enable entity detection
+            content_safety=True,
+            content_safety_confidence=60  # 60% confidence threshold
+        )
+
         # Transcribe the audio file with entity detection enabled
         transcript = aai.Transcriber().transcribe(file_path, config)
 
@@ -41,7 +43,7 @@ def upload_audio():
 
         # Check if entities exist in the transcript
         if not transcript.entities:
-            return "No entities detected in the transcript.", 400
+            return "No entities detected in the transcript.", 200
 
         # content to look out for
         flagged_content = ["credit_card_cvv"]
@@ -78,6 +80,7 @@ def upload_audio():
         return "Processed the audio file successfully", 200
 
     except Exception as e:
+        print(e)
         return f"An error occurred: {str(e)}", 500
 
     finally:
