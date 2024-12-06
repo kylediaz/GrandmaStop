@@ -12,17 +12,18 @@ aai.settings.api_key = "a8414083bc4b4e298baf9d23e128da59"
 
 @app.route('/upload', methods=['POST'])
 def upload_audio():
-    if 'file' not in request.files:
+    print(request.values)
+    if 'file' not in request.values:
         return 'No file part', 400
-    audio_file = request.files['file']
-    if audio_file.filename == '':
-        return 'No selected file', 400
+    audio_blob = request.values['file']
 
     # Save the uploaded file temporarily
     temp_dir = "temp"
     os.makedirs(temp_dir, exist_ok=True)
-    file_path = os.path.join(temp_dir, audio_file.filename)
-    audio_file.save(file_path)
+    file_path = os.path.join(temp_dir, "temp.mp3")
+
+    with open(file_path, 'w') as file:
+        file.write(audio_blob)
 
     # Set the content safety and entity detection config
     config = aai.TranscriptionConfig(
