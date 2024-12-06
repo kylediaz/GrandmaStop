@@ -12,10 +12,6 @@ export default function Keypad() {
     }
   };
 
-  const handleDelete = () => {
-    setPhoneNumber(prev => prev.slice(0, -1));
-  };
-
   const formatPhoneNumber = (number: string) => {
     if (number.length === 0) return '';
     if (number.length <= 3) return number;
