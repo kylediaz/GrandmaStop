@@ -46,21 +46,37 @@ def upload_audio():
         os.makedirs(output_dir, exist_ok=True)
         output_path = os.path.join(output_dir, f"{audio_file.filename}_flagged.txt")
 
+        # content to look out for
+        flagged_content = ["credit_card_cvv"]
+
         # Open the text file for writing
         with open(output_path, "w") as text_file:
             flagged_found = False
             # Loop through detected entities
             for entity in transcript.entities:
-                if entity.entity_type == "credit_card_cvv":
+                if entity.entity_type in flagged_content :
                     text_file.write(f"Entity Detected: {entity.text}\n")
                     text_file.write(f"Entity Type: {entity.entity_type}\n")
-                    text_file.write(f"Timestamp: {entity.start} - {entity.end}\n")
                     text_file.write("\n")
                     flagged_found = True
 
-            # If no 'credit_card_cvv' entity is found, inform the user
+            # If flagged entity is found, summarize the audio and add to the file
+            if flagged_found:
+                # Set summarization config
+                summary_config = aai.TranscriptionConfig(
+                    summarization=True,
+                    summary_model=aai.SummarizationModel.informative,
+                    summary_type=aai.SummarizationType.bullets
+                )
+                # Transcribe with summarization enabled
+                summary_transcript = aai.Transcriber().transcribe(file_path, summary_config)
+
+                text_file.write("\nSummary of the Audio:\n")
+                text_file.write(summary_transcript.summary)  # Write the summary to the file
+
+            # If no flagged entity is found, print in the terminal
             if not flagged_found:
-                text_file.write("No credit_card_cvv entity detected.\n")
+                print(f"No 'credit_card_cvv' entity detected in {audio_file.filename}.")
 
         # Return success message
         return f"Flagged content (if any) has been saved to {output_path}", 200

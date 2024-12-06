@@ -1,0 +1,7 @@
+Entity Detected: 030
+Entity Type: credit_card_cvv
+Timestamp: 4185 - 5405
+
+
+Summary of the Audio:
+- Hello? Yeah, my cvv number is 030. Okay, bye.
