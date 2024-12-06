@@ -1,7 +1,0 @@
-Entity Detected: 030
-Entity Type: credit_card_cvv
-Timestamp: 22321 - 22985
-
-
-Summary of the Audio:
-- My banking information is 1-2-3-45. And my CVV number is also 030. How do I find my banking information? You go on chase. com.
