@@ -29,7 +29,7 @@ export default function VoiceRecorder() {
           formData.append('file', audioBlob, 'recording.mp3');
           console.log(formData);
           
-          let server = process.env.BACKEND;
+          const server = process.env.BACKEND;
           const response = await fetch(server + '/upload', {
             method: 'POST',
             body: formData,
